@@ -273,7 +273,8 @@
 
             showUIState('loading');
 
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${canvasApiKey}`;
+            // 修正：將模型更新為公開穩定的 gemini-2.5-flash
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${canvasApiKey}`;
             
             const payload = {
                 contents: [{
