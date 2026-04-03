@@ -1,219 +1,315 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>美伊衝突：多視角論述生成系統</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    /* 載入動畫 */
-    .spinner {
-      animation: spin 1s linear infinite;
-    }
-    @keyframes spin {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 視角探索器：美國與伊朗衝突</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* 自訂滾動條，讓介面更精緻 */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8; 
+        }
+        .loader {
+            border: 3px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 3px solid #3b82f6;
+            width: 24px;
+            height: 24px;
+            -webkit-animation: spin 1s linear infinite;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
 </head>
-<body class="bg-slate-50 text-slate-800 font-sans min-h-screen p-4 md:p-8">
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col">
 
-  <div class="max-w-6xl mx-auto space-y-6">
-    <!-- Header -->
-    <header class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-      <h1 class="text-2xl md:text-3xl font-bold text-slate-900 flex items-center gap-3">
-        <!-- Globe Icon -->
-        <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-        美伊衝突：多視角論述生成系統
-      </h1>
-      <p class="mt-2 text-slate-600">
-        請輸入您希望探討的焦點與發言視角（例如：扮演美國官方談論核協議），系統將自動為您生成講稿，幫助理解國際事件的多元面向。
-      </p>
+    <!-- 頂部導覽列 -->
+    <header class="bg-blue-900 text-white shadow-md py-4 px-6 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+            <i class="fa-solid fa-globe text-2xl"></i>
+            <h1 class="text-xl font-bold tracking-wider">AI 視角探索器 <span class="text-blue-300 text-sm ml-2">教學專用系統</span></h1>
+        </div>
+        <div class="text-sm bg-blue-800 px-3 py-1 rounded-full border border-blue-700">
+            探討主題：美國與伊朗衝突
+        </div>
     </header>
 
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <!-- 左側：提示詞輸入 -->
-      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 flex flex-col h-full min-h-[500px]">
-        <h2 class="text-lg font-semibold border-b pb-4 mb-4 flex items-center gap-2">
-          <!-- Book Icon -->
-          <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
-          輸入提示詞
-        </h2>
-        <textarea
-          id="inputText"
-          placeholder="請輸入老師提供的AI視角提示詞卡的內容。"
-          class="flex-1 w-full p-4 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-none transition-all placeholder:text-slate-400 mb-4"
-        ></textarea>
-        <button
-          id="generateBtn"
-          onclick="handleGenerate()"
-          class="w-full py-4 px-4 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-medium rounded-xl flex items-center justify-center gap-2 transition-colors shadow-sm text-lg"
-        >
-          <span id="btnIcon">
-            <!-- Send Icon -->
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
-          </span>
-          <span id="btnText">生成文章</span>
-        </button>
-      </div>
+    <!-- 主要內容區：左右兩欄 (響應式) -->
+    <main class="flex-grow p-4 md:p-6 lg:p-8 flex flex-col lg:flex-row gap-6 max-w-7xl mx-auto w-full">
+        
+        <!-- 左欄：提示詞控制區 -->
+        <section class="w-full lg:w-1/2 bg-white rounded-2xl shadow-sm border border-slate-200 p-6 flex flex-col">
+            <h2 class="text-lg font-bold mb-4 border-b border-slate-100 pb-2 flex items-center gap-2">
+                <i class="fa-solid fa-pen-nib text-blue-600"></i> 提示詞設定區
+            </h2>
 
-      <!-- 右側：生成結果 -->
-      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 flex flex-col h-full min-h-[500px]">
-        <div class="flex justify-between items-center border-b pb-4 mb-4">
-          <h2 class="text-lg font-semibold flex items-center gap-2">
-            <!-- Shield Icon -->
-            <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-            生成結果預覽
-          </h2>
-          <button
-            id="copyBtn"
-            onclick="handleCopy()"
-            disabled
-            class="flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all text-slate-400 bg-slate-50 cursor-not-allowed"
-          >
-            <span id="copyIcon">
-              <!-- Copy Icon -->
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
-            </span>
-            <span id="copyText">複製文章</span>
-          </button>
-        </div>
+            <!-- 提示詞輸入區 -->
+            <div class="flex-grow flex flex-col mb-4">
+                <label for="promptInput" class="block text-sm font-semibold text-slate-700 mb-2">
+                    發言文章提示詞 (Prompt)：
+                </label>
+                <textarea id="promptInput" 
+                          class="w-full flex-grow min-h-[200px] p-4 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all resize-none text-slate-700 leading-relaxed"
+                          placeholder="請輸入你要讓 AI 生成文章的指示。例如：請以 [某個角色] 的語氣，撰寫一篇關於近期美伊衝突的評論，字數約300字..."></textarea>
+            </div>
 
-        <div class="flex-1 bg-slate-50 rounded-xl p-6 border border-slate-100 overflow-y-auto relative whitespace-pre-wrap leading-relaxed text-slate-700">
-          <div id="outputText" class="hidden"></div>
-          <div id="placeholderUI" class="absolute inset-0 flex flex-col items-center justify-center text-slate-400 space-y-4">
-            <svg class="w-12 h-12 opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
-            <p>在此顯示生成的文章內容</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+            <!-- 生成按鈕 -->
+            <button id="generateBtn" onclick="handleGenerate()" 
+                    class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2">
+                <i class="fa-solid fa-wand-magic-sparkles"></i> 產生視角文章
+            </button>
+        </section>
 
-  <script>
-    // ========== 老師請注意：在此處填入您的 API Key ==========
-    const API_KEY = "AIzaSyBoaIcpbcJ2h33MKud_YGs3-YgjRoQVvvA"; 
-    // =======================================================
+        <!-- 右欄：生成結果顯示區 -->
+        <section class="w-full lg:w-1/2 bg-white rounded-2xl shadow-sm border border-slate-200 p-6 flex flex-col relative">
+            <div class="flex items-center justify-between mb-4 border-b border-slate-100 pb-2">
+                <h2 class="text-lg font-bold flex items-center gap-2">
+                    <i class="fa-solid fa-file-lines text-slate-600"></i> AI 生成結果
+                </h2>
+                <!-- 複製按鈕 -->
+                <button id="copyBtn" onclick="copyResult()" disabled
+                        class="px-4 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-600 text-sm font-semibold rounded-lg transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                    <i class="fa-regular fa-copy"></i> <span id="copyText">複製結果</span>
+                </button>
+            </div>
 
-    // 取得 DOM 元素
-    const inputEl = document.getElementById('inputText');
-    const generateBtn = document.getElementById('generateBtn');
-    const btnIcon = document.getElementById('btnIcon');
-    const btnText = document.getElementById('btnText');
-    const outputEl = document.getElementById('outputText');
-    const placeholderUI = document.getElementById('placeholderUI');
-    const copyBtn = document.getElementById('copyBtn');
-    const copyIcon = document.getElementById('copyIcon');
-    const copyText = document.getElementById('copyText');
+            <!-- 結果顯示框 -->
+            <div id="resultContainer" class="w-full flex-grow bg-slate-50 border border-slate-200 rounded-xl p-5 overflow-y-auto relative min-h-[300px]">
+                
+                <!-- 初始狀態 / 空白狀態 -->
+                <div id="emptyState" class="absolute inset-0 flex flex-col items-center justify-center text-slate-400">
+                    <i class="fa-solid fa-robot text-4xl mb-3 text-slate-300"></i>
+                    <p>等待生成中...</p>
+                    <p class="text-sm mt-1">調整左側提示詞以體驗不同視角</p>
+                </div>
 
-    let currentGeneratedText = "";
+                <!-- 載入中狀態 -->
+                <div id="loadingState" class="absolute inset-0 flex flex-col items-center justify-center text-blue-600 hidden bg-slate-50/80 backdrop-blur-sm z-10 rounded-xl">
+                    <div class="loader mb-3"></div>
+                    <p class="font-semibold animate-pulse">AI 正在分析視角並撰寫文章...</p>
+                </div>
 
-    // 監聽輸入框變化以啟用/停用按鈕
-    inputEl.addEventListener('input', () => {
-      if (inputEl.value.trim() === "") {
-        generateBtn.disabled = true;
-      } else {
-        generateBtn.disabled = false;
-      }
-    });
+                <!-- 錯誤訊息狀態 -->
+                <div id="errorState" class="hidden text-red-600 p-4 bg-red-50 rounded-lg border border-red-200">
+                    <p class="font-bold flex items-center gap-2"><i class="fa-solid fa-triangle-exclamation"></i> 發生錯誤</p>
+                    <p id="errorMessage" class="text-sm mt-2"></p>
+                </div>
 
-    async function handleGenerate() {
-      const text = inputEl.value.trim();
-      if (!text) return;
+                <!-- 實際文字結果 -->
+                <div id="outputText" class="text-slate-800 leading-loose whitespace-pre-wrap hidden"></div>
+            </div>
+            
+            <!-- 隱藏的 textarea 專門用來執行相容性複製 -->
+            <textarea id="hiddenCopyArea" class="sr-only" aria-hidden="true"></textarea>
+        </section>
+    </main>
 
-      if (!API_KEY) {
-        alert("老師您好！請記得先在檔案中的 API_KEY 欄位填入您的金鑰喔！");
-        return;
-      }
+    <footer class="text-center py-4 text-slate-500 text-sm">
+        <p>此系統僅供教育與學術探討使用，展示 AI 模型在不同提示詞下的視角差異。</p>
+    </footer>
 
-      // 設置載入中狀態
-      inputEl.disabled = true;
-      generateBtn.disabled = true;
-      btnText.innerText = "正在生成文章...";
-      btnIcon.innerHTML = `<svg class="w-5 h-5 spinner" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>`;
-      
-      const systemInstruction = `你是一個專門協助學生理解國際地緣政治的 AI 助教。
-請根據使用者輸入的提示詞設定（包含發言角色與討論焦點），以繁體中文（台灣習慣用語）輸出。
-你的任務是撰寫一篇關於「美伊衝突」的發言文章。
-必須完全投入使用者設定的角色立場，展現其情感、邏輯與訴求。
-字數約 300-500 字，結構建議包含：立場宣告、對當前局勢的看法、具體訴求或結論。`;
+    <script>
+        // --- 系統設定 ---
+        const canvasApiKey = "AIzaSyBIO4iGajOeTfhBLXbrHzhCh1KJYtOy26g"; // 💡 教師請直接將您的 Gemini API 金鑰貼在引號內替換掉 YOUR_API_KEY_HERE
+        
+        // --- UI 互動邏輯 ---
+        function showUIState(state, message = '') {
+            const emptyState = document.getElementById('emptyState');
+            const loadingState = document.getElementById('loadingState');
+            const errorState = document.getElementById('errorState');
+            const outputText = document.getElementById('outputText');
+            const generateBtn = document.getElementById('generateBtn');
+            const copyBtn = document.getElementById('copyBtn');
 
-     try {
-      // 換上您剛剛新申請的 API_KEY，並將模型改為 gemini-1.5-flash-latest 確保抓取最新可用版本
-      const NEW_API_KEY = "AIzaSyBoaIcpbcJ2h33MKud_YGs3-YgjRoQVvvA"; 
-      
-      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${NEW_API_KEY}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: text }] }],
-          systemInstruction: { parts: [{ text: systemInstruction }] },
-          generationConfig: { temperature: 0.7 }
-        })
-      });
+            // 隱藏所有
+            emptyState.classList.add('hidden');
+            loadingState.classList.add('hidden');
+            errorState.classList.add('hidden');
+            outputText.classList.add('hidden');
+            copyBtn.disabled = true;
 
-      if (!response.ok) {
-        // 印出詳細錯誤，方便如果再失敗時可以查看原因
-        const errorData = await response.json();
-        console.error("API 錯誤詳情:", errorData);
-        throw new Error('API Request Failed');
-      }
-      
-      const data = await response.json();
-      currentGeneratedText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-        if (currentGeneratedText) {
-          outputEl.innerText = currentGeneratedText;
-          outputEl.classList.remove('hidden');
-          placeholderUI.classList.add('hidden');
-          
-          // 啟用複製按鈕
-          copyBtn.disabled = false;
-          copyBtn.className = "flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all bg-slate-100 hover:bg-slate-200 text-slate-700";
-        } else {
-          outputEl.innerText = "【系統提示】生成失敗，請檢查提示詞或稍後再試。";
-          outputEl.classList.remove('hidden');
-          placeholderUI.classList.add('hidden');
+            switch(state) {
+                case 'loading':
+                    loadingState.classList.remove('hidden');
+                    generateBtn.disabled = true;
+                    generateBtn.classList.add('opacity-70', 'cursor-not-allowed');
+                    break;
+                case 'success':
+                    outputText.classList.remove('hidden');
+                    outputText.innerText = message;
+                    copyBtn.disabled = false;
+                    generateBtn.disabled = false;
+                    generateBtn.classList.remove('opacity-70', 'cursor-not-allowed');
+                    break;
+                case 'error':
+                    errorState.classList.remove('hidden');
+                    document.getElementById('errorMessage').innerText = message;
+                    generateBtn.disabled = false;
+                    generateBtn.classList.remove('opacity-70', 'cursor-not-allowed');
+                    break;
+                case 'empty':
+                default:
+                    emptyState.classList.remove('hidden');
+                    break;
+            }
         }
 
-      } catch (error) {
-        console.error(error);
-        outputEl.innerText = "【系統提示】連線發生錯誤，無法取得模型回應。請確認網路狀態或稍後重試。";
-        outputEl.classList.remove('hidden');
-        placeholderUI.classList.add('hidden');
-      } finally {
-        // 恢復按鈕狀態
-        inputEl.disabled = false;
-        generateBtn.disabled = false;
-        btnText.innerText = "生成文章";
-        btnIcon.innerHTML = `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>`;
-      }
-    }
+        // 相容性高的複製功能 (適用於 iframe 環境)
+        function copyResult() {
+            const outputText = document.getElementById('outputText').innerText;
+            if (!outputText) return;
 
-    function handleCopy() {
-      if (!currentGeneratedText) return;
-      
-      const textArea = document.createElement("textarea");
-      textArea.value = currentGeneratedText;
-      document.body.appendChild(textArea);
-      textArea.select();
-      try {
-        document.execCommand('copy');
-        
-        // 複製成功的 UI 變化
-        copyBtn.className = "flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all bg-emerald-100 text-emerald-700";
-        copyIcon.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>`;
-        copyText.innerText = "已複製！";
-        
-        setTimeout(() => {
-          copyBtn.className = "flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all bg-slate-100 hover:bg-slate-200 text-slate-700";
-          copyIcon.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>`;
-          copyText.innerText = "複製文章";
-        }, 2000);
-      } catch (err) {
-        console.error('複製失敗', err);
-      }
-      document.body.removeChild(textArea);
-    }
-  </script>
+            const hiddenArea = document.getElementById('hiddenCopyArea');
+            hiddenArea.value = outputText;
+            
+            // 讓隱藏的 textarea 暫時可見並選取
+            hiddenArea.classList.remove('sr-only');
+            hiddenArea.style.position = 'absolute';
+            hiddenArea.style.left = '-9999px';
+            
+            hiddenArea.select();
+            hiddenArea.setSelectionRange(0, 99999); // 支援手機
+
+            try {
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    const copyBtnText = document.getElementById('copyText');
+                    const originalHTML = document.getElementById('copyBtn').innerHTML;
+                    
+                    document.getElementById('copyBtn').innerHTML = '<i class="fa-solid fa-check text-emerald-500"></i> <span class="text-emerald-500">已複製</span>';
+                    
+                    setTimeout(() => {
+                        document.getElementById('copyBtn').innerHTML = originalHTML;
+                    }, 2000);
+                } else {
+                    showMessageBox("複製失敗，請手動框選複製。");
+                }
+            } catch (err) {
+                showMessageBox("瀏覽器不支援此複製方式，請手動複製。");
+            } finally {
+                // 恢復隱藏
+                hiddenArea.classList.add('sr-only');
+                hiddenArea.style.position = '';
+                hiddenArea.style.left = '';
+            }
+        }
+
+        // 自訂訊息框 (替代 alert)
+        function showMessageBox(msg) {
+            const existingBox = document.getElementById('custom-msg-box');
+            if (existingBox) existingBox.remove();
+
+            const box = document.createElement('div');
+            box.id = 'custom-msg-box';
+            box.className = 'fixed bottom-4 right-4 bg-slate-800 text-white px-6 py-3 rounded-lg shadow-xl z-50 flex items-center gap-3 transform transition-all translate-y-10 opacity-0';
+            box.innerHTML = `<i class="fa-solid fa-bell text-blue-400"></i> <span>${msg}</span>`;
+            
+            document.body.appendChild(box);
+            
+            // 動畫顯示
+            setTimeout(() => {
+                box.classList.remove('translate-y-10', 'opacity-0');
+            }, 10);
+
+            // 自動隱藏
+            setTimeout(() => {
+                box.classList.add('translate-y-10', 'opacity-0');
+                setTimeout(() => box.remove(), 300);
+            }, 3000);
+        }
+
+        // --- API 呼叫與指數退避重試邏輯 ---
+        async function fetchWithRetry(url, options, maxRetries = 5) {
+            const delays = [1000, 2000, 4000, 8000, 16000];
+            let lastError;
+
+            for (let i = 0; i < maxRetries; i++) {
+                try {
+                    const response = await fetch(url, options);
+                    const data = await response.json();
+                    
+                    if (!response.ok) {
+                        throw new Error(data.error?.message || `HTTP 錯誤：${response.status}`);
+                    }
+                    return data;
+                } catch (error) {
+                    lastError = error;
+                    if (i < maxRetries - 1) {
+                        // 等待指定的延遲時間
+                        await new Promise(resolve => setTimeout(resolve, delays[i]));
+                    }
+                }
+            }
+            throw lastError; // 所有重試皆失敗後拋出錯誤
+        }
+
+        async function handleGenerate() {
+            const prompt = document.getElementById('promptInput').value.trim();
+
+            if (!prompt) {
+                showMessageBox("請先輸入提示詞！");
+                return;
+            }
+
+            if (!canvasApiKey || canvasApiKey === "YOUR_API_KEY_HERE") {
+                showUIState('error', '系統未設定 API 金鑰。請教師在原始碼的 canvasApiKey 變數中填寫有效的 Gemini API 金鑰。');
+                return;
+            }
+
+            showUIState('loading');
+
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${canvasApiKey}`;
+            
+            const payload = {
+                contents: [{
+                    parts: [{
+                        text: prompt
+                    }]
+                }],
+                systemInstruction: {
+                    parts: [{
+                        text: "你現在是一個用於教育用途的AI，目的是幫助學生理解不同的國際視角。請嚴格根據使用者的提示詞，模擬特定的語氣、立場和角色來撰寫文章。確保你的回覆始終使用繁體中文（正體字），並且排版清晰易讀。"
+                    }]
+                }
+            };
+
+            try {
+                const result = await fetchWithRetry(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const generatedText = result.candidates?.[0]?.content?.parts?.[0]?.text;
+                
+                if (generatedText) {
+                    showUIState('success', generatedText);
+                } else {
+                    throw new Error("API 未返回預期的文字內容。");
+                }
+
+            } catch (error) {
+                console.error("Generation Error:", error);
+                showUIState('error', `生成失敗，請檢查金鑰或網路連線。詳細錯誤：${error.message}`);
+            }
+        }
+    </script>
 </body>
 </html>
