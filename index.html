@@ -125,17 +125,8 @@
 
     <script>
         // --- 系統設定 ---
-        // --- 系統設定 ---
-        // 準備多把金鑰來分散課堂上的瞬間流量 (陣列中放入您的 3 把新金鑰，並將字串切開)
-        const apiKeys = [
-            "AIzaSyANm2THoOdM" + "qGBOPlAriIFtLiq-y2IngPE",
-            "AIzaSyDH-UmximWkAvPt" + "-Bebi1d7ty0o6jR-hxo",
-            "AIzaSyAc_cLTQ71l4" + "XTRR2sF3maRuByl_35i2ug"
-        ];
-        
-        // 讓系統隨機抽取一把金鑰來使用
-        const canvasApiKey = apiKeys[Math.floor(Math.random() * apiKeys.length)];
-       // const canvasApiKey = "AIzaSyDbbnFiPxFCV5"+"LMs2ExL7ONBhleO9zeu4s"; // 💡 教師請直接將您的 Gemini API 金鑰貼在引號內替換掉 YOUR_API_KEY_HERE
+      
+        const canvasApiKey = "AIzaSyDbbnFiPxFCV5"+"LMs2ExL7ONBhleO9zeu4s"; // 💡 教師請直接將您的 Gemini API 金鑰貼在引號內替換掉 YOUR_API_KEY_HERE
         
         // --- UI 互動邏輯 ---
         function showUIState(state, message = '') {
