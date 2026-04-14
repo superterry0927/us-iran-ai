@@ -268,6 +268,46 @@
             throw lastError; // 所有重試皆失敗後拋出錯誤
         }
 
+        // --- API 呼叫與指數退避重試邏輯 ---
+        
+        // 新增：防連點冷卻狀態變數
+        let isCooldown = false; 
+
+        // ... (保留原本的 fetchWithRetry 函數) ...
+
+        async function handleGenerate() {
+            // 新增：檢查是否在冷卻中
+            if (isCooldown) {
+                showMessageBox("系統正在處理其他請求，請稍候 5 秒再試！");
+                return;
+            }
+
+            const prompt = document.getElementById('promptInput').value.trim();
+
+            if (!prompt) {
+                showMessageBox("請先輸入提示詞！");
+                return;
+            }
+
+            if (!canvasApiKey || canvasApiKey === "YOUR_API_KEY_HERE") {
+                showUIState('error', '系統未設定 API 金鑰。');
+                return;
+            }
+
+            // 新增：啟動冷卻機制 (鎖定按鈕 5 秒)
+            isCooldown = true;
+            const generateBtn = document.getElementById('generateBtn');
+            const originalBtnHtml = generateBtn.innerHTML;
+            generateBtn.innerHTML = '<i class="fa-solid fa-hourglass-half"></i> 冷卻中...';
+            
+            setTimeout(() => {
+                isCooldown = false;
+                generateBtn.innerHTML = originalBtnHtml;
+            }, 5000); // 5000 毫秒 = 5 秒後解除冷卻
+
+            showUIState('loading');
+
+            // ... (下方保留您原本的 API 呼叫邏輯) ...
         async function handleGenerate() {
             const prompt = document.getElementById('promptInput').value.trim();
 
